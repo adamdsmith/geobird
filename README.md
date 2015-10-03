@@ -114,6 +114,6 @@ plot_ebird_phen(piedmont)
 
 ![Pick a species, any species](./README-figs/BLGR.png)
 
-![](README_files/figure-markdown_github/phen_plots2-1.png)
+![BLGR phenology](./README-figs/BLGR_plot.png)
 
 The plot suggests that our expectations were correct, and it also gives us information about the amount of monthly effort which, for Piedmont, is greatest from February through June. It also reports to us the distance of the buffer around Piedmont that we used --- in this case, no buffer.

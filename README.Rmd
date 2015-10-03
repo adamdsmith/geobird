@@ -131,8 +131,6 @@ plot_ebird_phen(piedmont)
 
 ![Pick a species, any species](./README-figs/BLGR.png) 
 
-```{r phen_plots2, echo = FALSE, fig.width = 8, fig.height=5}
-plot_ebird_phen(piedmont, species = "Blue Grosbeak")
-```
+![BLGR phenology](./README-figs/BLGR_plot.png) 
 
 The plot suggests that our expectations were correct, and it also gives us information about the amount of monthly effort which, for Piedmont, is greatest from February through June.  It also reports to us the distance of the buffer around Piedmont that we used --- in this case, no buffer.
