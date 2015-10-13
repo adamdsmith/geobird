@@ -25,7 +25,7 @@ Basic operations are illustrated below. For details on the arguments and options
 
 ### Parsing eBird queries from Cornell
 
-We access historical eBird observations by requesting a state-by-state queries of the eBird database hosted by Cornell. It comes as an often large (e.g., Florida's weighed in at nearly 4 GB and contained over 10 million records) tab-delimited text file. We only need a subset of the 43 variables contained in the file and we also like to exclude records (1) not identified to species, (2) duplicated on eBird checklists of multiple observers, and (3) non-approved (i.e., not yet vetted) records.
+We access historical eBird observations by requesting a state-by-state queries of the eBird database hosted by Cornell. It comes as an often large tab-delimited text file (e.g., Florida's weighed in at nearly 4 GB and contained over 10 million records). We only need a subset of the 43 variables contained in the file and we also wish to exclude records (1) not identified to species, (2) duplicated on eBird checklists of multiple observers, and (3) non-approved (i.e., not yet vetted) records.
 
 The `parse_ebird` function accomplishes these tasks and outputs a data structure amenable to local storage in a SQLite database. One need only direct the function to the appropriate tab-delimited text file.
 
