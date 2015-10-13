@@ -43,7 +43,7 @@ plot_ebird_phen <- function(geo_ebird_df, species = NULL, complete_only = TRUE) 
         group_by(name, common_name, sci_name, buff_dist_km, month) %>%
         summarise(checklist = n()) %>% #,
         #          avg_count = round(sum(count) / checklist, 1)) %>%
-        reshape2::melt(id = c("name", "common_name", "sci_name", "month", "buff_dist_km"))
+        data.table::melt(id = c("name", "common_name", "sci_name", "month", "buff_dist_km"))
         # mutate(variable = factor(variable, labels = c("# checklists", "Average count / checklist")),
 
     # Add zeros for months without data
