@@ -13,7 +13,7 @@
 
 parse_ebird <- function(file) {
 
-    df <- data.table::fread(file, sep = "\t", header = TRUE, na.strings = c("NA", ""),
+    df <- data.table::fread(file, sep = "\t", header = TRUE, na.strings = c("NA", ""), quote = "",
                             colClasses = c("character", "numeric", rep("character", 3),
                                            rep("NULL", 2), "character", rep("NULL", 7), "character",
                                            rep("NULL", 6), rep("numeric", 2), "character",
@@ -24,7 +24,7 @@ parse_ebird <- function(file) {
                                           "all_spp", "checklist_grp", "approved"))
 
     # Filter out categories "spuh", "domestic", and "slash" & only to approved records
-    df <- dplyr::filter(df,
+    df <- dplyr::filter(as.data.frame(df),
                         !(category %in% c("spuh", "domestic", "slash")) & approved == 1)
 
     # Convert "X" counts (i.e., not recorded) to 1 and convert to integer
