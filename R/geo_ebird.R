@@ -25,7 +25,7 @@
 #'  the exception of the area around the southwestern coast of Norway and Svalbard (but it's the least
 #'  of our concerns at the moment).
 #'
-#' @param query_polys \code{\link[sp]{SpatialPolygonDataFrame-class}} within and around which
+#' @param query_polys \code{\link[sp]{SpatialPolygonsDataFrame-class}} within and around which
 #'  the user wishes to extract eBird records.  Currently, it is assumed that input \code{query_polys}
 #'  are in a geographic (i.e., latitude and longitude) projection.  See Details.
 #' @param ebird_sqlite character string file path to local eBird SQLite (.sqlite) database file

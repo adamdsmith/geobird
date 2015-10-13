@@ -10,7 +10,7 @@ geo_ebird(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
   poly_id = "ORGNAME", projection = NULL)
 }
 \arguments{
-\item{query_polys}{\code{\link[sp]{SpatialPolygonDataFrame-class}} within and around which
+\item{query_polys}{\code{\link[sp]{SpatialPolygonsDataFrame-class}} within and around which
 the user wishes to extract eBird records.  Currently, it is assumed that input \code{query_polys}
 are in a geographic (i.e., latitude and longitude) projection.  See Details.}
 
