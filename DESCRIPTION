@@ -17,7 +17,7 @@ Description: Functions to read and parse eBird database requests (.txt), store t
     methods to other areas or georeferenced species occurrence databases.
 Depends: R (>= 3.2.1)
 Imports:
-    data.table (>= 1.9.7)
+    data.table (>= 1.9.7),
     DBI (>= 0.3.1),
     dplyr (>= 0.4.2),
     ggplot2 (>= 1.0.1),
