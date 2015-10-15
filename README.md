@@ -133,14 +133,14 @@ Effort is now also summarized for each distance category (bottom panel).
 
 We can also visualize the monthly patterns of eBird detections by species, relative to eBird effort (i.e., \# checklists), using the `plot_ebird_phen` function.
 
-We can specify the species using the `species` argument (using the accepted AOU name but insensitive to capitalization) or, if not specified, we're presented with a list of available species. We select Blue Grosbeaks, which should be present at Piedmont NWR from spring through fall but largely absent in winter.
+We can specify the species using the `species` argument (using the accepted AOU name but insensitive to capitalization) or, if not specified, we're presented with a list of available species. We follow up on the possible discrepancy in Pileated Woodpecker abundance on-refuge and on the larger landscape.
 
 ``` r
-plot_ebird_phen(piedmont)
+plot_ebird_phen(piedmont_buffs)
 ```
 
-![Pick a species, any species](./README-figs/BLGR.png)
+![Pick a species, any species](./README-figs/PIWO.png)
 
-![BLGR phenology](./README-figs/BLGR_plot.png)
+![PIWO phenology](./README-figs/PIWO_plot.png)
 
-The plot suggests that our expectations were correct, and it also gives us information about the amount of monthly effort which, for Piedmont, is greatest from February through June. It also reports to us the distance of the buffer around Piedmont that we used --- in this case, no buffer.
+The plot illustrates the higher proporortion of complete checklists containing Pileated Woodpeckers in fall and winter (Sep - Feb), and also provides information about the amount of monthly effort which, for Piedmont and the surrounding area, is greatest from February through June.
