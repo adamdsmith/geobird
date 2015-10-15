@@ -15,14 +15,15 @@ eBird checklists to require in a given season before assigning a seasonal abunda
 classification}
 
 \item{xls}{logical indicating whether to output nicely formatted *.xls file (TRUE; default) or to
-create a \code{\link{list}} of relevant information (FALSE)}
+create a \code{\link{list}} of relevant information without any formatting (FALSE; i.e., for
+further manipulation in R)}
 
 \item{out_dir}{character string of the file path to the directory in which to save output
 spreadsheets}
 }
 \value{
 a Microsoft Excel spreadsheet for each distinct polygon (i.e., each (\code{name}) in
-  \code{geo_ebird_df}
+  \code{geo_ebird_df}) when \code{xls = TRUE} or a \code{\link{list}} of \code{\link{list}}s
 }
 \description{
 This function generates, for each queried polygon, a spreadsheet of all species detected on at
@@ -48,5 +49,18 @@ Abundance designations are classified based on the proportion of complete checkl
  0.3]), Occasional (O; (0.1 - 0.2]), Rare (R; (0.01 - 0.1]), and Vagrant (V; <= 0.01).  Notice
  that the cutoff for a "Vagrant" designation requires at least 100 checklists; with fewer checklists
  this designation is lumped with "Rare".
+}
+\examples{
+\dontrun{
+# Get shapefile
+SErefuges <- rgdal::readOGR("../GIS", "refuges", verbose = FALSE, stringsAsFactors = FALSE)
+
+# Query eBird records within Piedmont NWR and 10 km buffer
+piedmont <- geo_ebird(SErefuges, which_polys = "Piedmont", buffers = c(0, 10))
+
+# Generate .xls spreadsheet contain abundance, occurrence, and effort information
+# Require 100 complete checklists to generate abundance classification
+make_checklists(piedmont, min_lists = 100)
+}
 }
 

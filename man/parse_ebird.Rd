@@ -20,4 +20,12 @@ level, duplicate records present in group checklists and non-approved records.  
 species with an unspecified count of individuals are assigne a minimum value (i.e., 1) to
 indicate occurrence.
 }
+\examples{
+\dontrun{
+# Parse and store eBird data from Florida into our SE_ebird SQLite database
+# Assumes local database exists and prepared to accept records; see ?store_ebird
+fl_birds <- parse_ebird("./Data/ebd_US-FL_relAug-2015.txt")
+store_ebird(fl_birds)
+}
+}
 

@@ -1,19 +1,33 @@
 #' Create species phenology plots (monthly) of eBird species abundance and occurrence (# checklists).
 #'
-#' This function generates, for each queried polygon, a phenology plot of eBird sightings
-#'  (proportion of checklists with species observed) by month. The number of checklists
-#'  present for each month is also indicated graphically.
+#' This function generates, for each queried polygon, a phenology plot of eBird sightings by month.
+#'  The user can choose between displaying the proportion of only complete checklists or all
+#'  available checklists. The number of checklists is indicated graphically.
 #'
 #' @param geo_ebird_df a \code{\link{data.frame}} created by \code{\link{geo_ebird}}
 #' @param species a character string of length = 1 indicating the species to visualize.  If NULL
 #'  (the default), the user is presented with a list of available species from which to choose.
-#'  Use the accepted American Ornithologists' Union name \link{http://checklist.aou.org/taxa/},
-#'  insensitive to capitalization.
-#' @param complete_only logical indicating whether only eBird checklists designating as reporting
-#'  all species observed should be used (default = TRUE)
+#'  Use the accepted American Ornithologists' Union name (see http://checklist.aou.org/taxa),
+#'  insensitive to capitalization (e.g., "PuRpLe MaRtIn" works).
+#' @param complete_only logical indicating whether only eBird checklists designated as reporting
+#'  all species observed (i.e., complete checklists; default = TRUE) should be used to calculate
+#'  proportion of checklists or whether all available checklists should be used (FALSE)
 #' @return a \code{\link[ggplot2]{ggplot}} object
 #' @import dplyr ggplot2
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Get shapefile
+#' SErefuges <- rgdal::readOGR("../GIS", "refuges", verbose = FALSE, stringsAsFactors = FALSE)
+#'
+#' # Query eBird records within Piedmont NWR and 10 km buffer
+#' piedmont <- geo_ebird(SErefuges, which_polys = "Piedmont", buffers = c(0, 10))
+#'
+#' # Plot phenology of Pileated Woodpecker
+#' # Species not case sensitive
+#' plot_ebird_phen(piedmont, species = "PiLEAted WOOdPECKer")
+#' }
 
 plot_ebird_phen <- function(geo_ebird_df, species = NULL, complete_only = TRUE) {
 

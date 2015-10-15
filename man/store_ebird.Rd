@@ -15,7 +15,40 @@ store_ebird(df, db = "../Data/SE_eBird.sqlite",
 \item{table_name}{character string specifying a DBMS table name}
 }
 \description{
-This function appends a \code{\link{data.frame}} created by \code{parse_ebird}
+This function appends a \code{\link{data.frame}} created by \code{\link{parse_ebird}}
 to an existing SQLite database.
+}
+\details{
+This requires an existing SQLite database that is ready to receive the output of
+ \code{\link{parse_ebird}}.  See example below for how the local database was set up
+ for southeast refuges.
+}
+\examples{
+\dontrun{
+# Set up eBird SQLite database
+library(sqldf)
+db <- dbConnect(SQLite(), dbname="./Data/SE_eBird.sqlite")
+
+dbSendQuery(conn = db,
+            "CREATE TABLE SE_eBird_Aug2015
+            (id TEXT,
+            tax_order REAL,
+            category TEXT,
+            common_name TEXT,
+            sci_name TEXT,
+            count INTEGER,
+            county TEXT,
+            lat REAL,
+            lon REAL,
+            date INTEGER,
+            checklist TEXT,
+            all_spp INTEGER)")
+
+ga_birds <- parse_ebird("./Data/ebd_US-GA_relAug-2015.txt")
+store_ebird(ga_birds)
+
+# Close connection
+dbDisconnect(db)
+}
 }
 

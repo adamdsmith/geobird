@@ -10,6 +10,14 @@
 #' @param file character string of the file path to the tab-delimited eBird .txt file
 #' @return a \code{\link{data.frame}}
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Parse and store eBird data from Florida into our SE_ebird SQLite database
+#' # Assumes local database exists and prepared to accept records; see ?store_ebird
+#' fl_birds <- parse_ebird("./Data/ebd_US-FL_relAug-2015.txt")
+#' store_ebird(fl_birds)
+#' }
 
 parse_ebird <- function(file) {
 

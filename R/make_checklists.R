@@ -28,14 +28,28 @@
 #'  eBird checklists to require in a given season before assigning a seasonal abundance
 #'  classification
 #' @param xls logical indicating whether to output nicely formatted *.xls file (TRUE; default) or to
-#'  create a \code{\link{list}} of relevant information (FALSE)
+#'  create a \code{\link{list}} of relevant information without any formatting (FALSE; i.e., for
+#'  further manipulation in R)
 #' @param out_dir character string of the file path to the directory in which to save output
 #'  spreadsheets
 #' @return a Microsoft Excel spreadsheet for each distinct polygon (i.e., each (\code{name}) in
-#'   \code{geo_ebird_df}
+#'   \code{geo_ebird_df}) when \code{xls = TRUE} or a \code{\link{list}} of \code{\link{list}}s
 #' @import dplyr
 #' @importFrom plyr "."
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Get shapefile
+#' SErefuges <- rgdal::readOGR("../GIS", "refuges", verbose = FALSE, stringsAsFactors = FALSE)
+#'
+#' # Query eBird records within Piedmont NWR and 10 km buffer
+#' piedmont <- geo_ebird(SErefuges, which_polys = "Piedmont", buffers = c(0, 10))
+#'
+#' # Generate .xls spreadsheet contain abundance, occurrence, and effort information
+#' # Require 100 complete checklists to generate abundance classification
+#' make_checklists(piedmont, min_lists = 100)
+#' }
 
 make_checklists <- function(geo_ebird_df, min_lists = 10L, xls = TRUE, out_dir = "../Output/")  {
 
