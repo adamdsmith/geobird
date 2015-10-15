@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 
 library(geobird)
-piedmont <- load("./inst/extdata/piedmont.rda")
+load("./inst/extdata/piedmont.rda")
 ```
 
 # The `geobird` package
