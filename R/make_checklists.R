@@ -140,15 +140,13 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, xls = TRUE, out_dir =
     # Change NAs to indicate to checklists
     checklists[, c("spring", "summer", "fall", "winter")][is.na(checklists[, c("spring", "summer", "fall", "winter")])] <- 0
 
-    # Generate a list by name
-    poly_abund <- plyr::dlply(abundance, plyr::.(name), df_to_checklist,
-                              type = "abund", n_buffs, buff_dists)
-    poly_occurrence <- plyr::dlply(occurrence, plyr::.(name), df_to_checklist,
-                                   type = "occ", n_buffs, buff_dists)
-    poly_effort <- plyr::dlply(checklists, plyr::.(name), select, -name)
-
     # Generate output spreadsheets, if requested
     if (xls) {
+        poly_abund <- plyr::dlply(abundance, plyr::.(name), df_to_checklist,
+                                  type = "abund", n_buffs, buff_dists)
+        poly_occurrence <- plyr::dlply(occurrence, plyr::.(name), df_to_checklist,
+                                       type = "occ", n_buffs, buff_dists)
+        poly_effort <- plyr::dlply(checklists, plyr::.(name), select, -name)
 
         for (name in names(poly_abund)) {
 
@@ -171,6 +169,10 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, xls = TRUE, out_dir =
         }
 
     } else {
+
+        poly_abund <- plyr::dlply(abundance, plyr::.(name), select, -name)
+        poly_occurrence <- plyr::dlply(occurrence, plyr::.(name), select, -name)
+        poly_effort <- plyr::dlply(checklists, plyr::.(name), select, -name)
 
         out <- list(eBird_abundnace = poly_abund,
                     eBird_all_records = poly_occurrence,
