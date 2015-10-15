@@ -22,12 +22,103 @@ code_abundance <- function(p_lists) {
     abundance[findInterval(p_lists, cuts, rightmost.closed = TRUE)]
 }
 
-df_to_checklist <- function(df) {
-    df %>% arrange(tax_order) %>% select(-name, -sci_name, -buff_dist_km, -tax_order)
+df_to_checklist <- function(df, type, n_buffs, buff_dists) {
+
+    df <- df %>% arrange(tax_order) %>% select(-name, -sci_name, -tax_order)
+    df[!sapply(df, is.character)] <- lapply(df[!sapply(df, is.character)], as.character)
+    which_cols <- names(df)[2:(4 * n_buffs + 1)]
+    spl_names <- unlist(regmatches(which_cols, regexpr("_", which_cols), invert = TRUE))
+    new_names <- every_nth(spl_names, 2, blank = FALSE)
+    names(df)[2:(4 * n_buffs + 1)] <- new_names
+    names(df) <- Cap(gsub("_", " ", names(df)))
+
+    new_row <- paste0("Buffer: ", every_nth(spl_names, 2, blank = FALSE, inverse = TRUE))
+    new_row <- gsub("Buffer: 0km", "Act. Boundary", new_row)
+    first_row <- names(df)
+    first_row[2:(4 * n_buffs + 1)] <- new_row
+    names(df)[1] <- ""
+
+    # Insert new top row
+    df <- rbind(first_row, df[-(1),])
+
+    if (type == "abund") {
+        if (min(buff_dists) == 0 && max(buff_dists) >= 5) {
+            names(df)[length(df) - (5:0)] <- c("First detected", " ", rep("On vs. All", 4))
+            df[1, length(df) - 5] <- "distance (km)"
+        }
+    } else {
+        if (n_buffs >= 2) {
+            names(df)[length(df) - (1:0)] <- c("First detected", " ")
+            df[1, length(df) - 1] <- "distance (km)"
+        }
+    }
+    df
+
 }
 
 shorten_nwr <- function(refuge_names) {
     # Simplify names for refuges and hatcheries
     refuge_names <- gsub("National W.*", "NWR", refuge_names)
     refuge_names <- gsub("National F.*", "NFH", refuge_names)
+}
+
+flip_string <- function(string, flip_char = "_", add_on = NULL) {
+    n_splits <- length(gregexpr("_", string)[[1]])
+    if (n_splits != 1) stop("flip_string only works if there is one flip_char in string")
+
+    spl <- strsplit(string, flip_char, fixed = TRUE)
+    out <- sapply(spl, function(x) {
+        tmp <- paste(x[2:1], collapse = flip_char)
+        if (!is.null(add_on)) tmp <- paste0(tmp, add_on)
+        tmp
+    })
+    out
+}
+
+# Modify xlsx::write.xlsx to autosize columns and freeze top row
+save.xlsx <- function (x, file, sheetName = "Sheet1", col.names = TRUE,
+                       start.row = 2, append = FALSE)
+{
+    iOffset <- 1
+    jOffset <- 0
+    if (append && file.exists(file)) {
+        wb <- xlsx::loadWorkbook(file)
+    } else {
+        ext <- gsub(".*\\.(.*)$", "\\1", basename(file))
+        wb <- xlsx::createWorkbook(type = ext)
+    }
+    sheet <- xlsx::createSheet(wb, sheetName)
+    noRows <- nrow(x) + iOffset
+    noCols <- ncol(x) + jOffset
+    if (col.names) {
+        rows <- xlsx::createRow(sheet, 1)
+        cells <- xlsx::createCell(rows, colIndex = 1:noCols)
+        mapply(xlsx::setCellValue, cells[1, (1 + jOffset):noCols],
+               colnames(x))
+    }
+    colIndex <- seq_len(ncol(x))
+    rowIndex <- seq_len(nrow(x)) + iOffset
+    xlsx::createFreezePane(sheet, start.row, 2, start.row, 2)
+    xlsx:::.write_block(wb, sheet, x, rowIndex, colIndex, showNA = FALSE)
+    xlsx::autoSizeColumn(xlsx::getSheets(wb)[[sheetName]], 1:ncol(x))
+    xlsx::saveWorkbook(wb, file)
+    invisible()
+}
+
+every_nth <- function(x, nth, blank = TRUE, inverse = FALSE) {
+    if (!inverse) {
+        if(blank) {
+            x[1:nth == 1] <- ""
+            x
+        } else {
+            x[1:nth == 1]
+        }
+    } else {
+        if(blank) {
+            x[1:nth != 1] <- ""
+            x
+        } else {
+            x[1:nth != 1]
+        }
+    }
 }

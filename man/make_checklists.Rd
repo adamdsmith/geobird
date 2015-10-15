@@ -4,7 +4,8 @@
 \alias{make_checklists}
 \title{Create spreadsheets of eBird species abundance and occurrence (i.e., # checklists).}
 \usage{
-make_checklists(geo_ebird_df, min_lists = 10L, out_dir = "../Output/")
+make_checklists(geo_ebird_df, min_lists = 10L, xls = TRUE,
+  out_dir = "../Output/")
 }
 \arguments{
 \item{geo_ebird_df}{a \code{\link{data.frame}} created by \code{\link{geo_ebird}}}
@@ -12,6 +13,9 @@ make_checklists(geo_ebird_df, min_lists = 10L, out_dir = "../Output/")
 \item{min_lists}{integer or numeric vector of length = 1 indicating the minimum number of complete
 eBird checklists to require in a given season before assigning a seasonal abundance
 classification}
+
+\item{xls}{logical indicating whether to output nicely formatted *.xls file (TRUE; default) or to
+create a \code{\link{list}} of relevant information (FALSE)}
 
 \item{out_dir}{character string of the file path to the directory in which to save output
 spreadsheets}
