@@ -1,20 +1,21 @@
 Package: geobird
 Type: Package
 Title: Query an eBird database by geography (e.g., shapefiles)
-Version: 0.1
-Date: 2015-09-30
+Version: 0.2
+Date: 2015-10-15
 Author: Adam D. Smith <adam_d_smith@fws.gov>
 Maintainer: Adam D. Smith <adam_d_smith@fws.gov>
 Description: Functions to read and parse eBird database requests (.txt), store them in a local
     SQLite database, and to request geographic queries of that database based on user-provided
     shapefiles.  Users may optionally buffer the shapefiles by any distance.  Additionally,
     functions are available to visualize the monthly phenology of eBird records by species for
-    a given geography and produce a spreadsheet with eBird records by season.  In the latter,
-    seasonal abundance codes are assigned to each species based on the proportion of complete
-    eBird checklists (i.e., observers reported all species observed), provided some minimum
-    number of checklists is present for a given geography and season.  Current functionality
-    is limited to the United States, but there is little to prevent the expansion of the
-    methods to other areas or georeferenced species occurrence databases.
+    a given geography and produce a spreadsheet with eBird records by season as well as some
+    additional information when buffers are specified.  In the latter, seasonal abundance codes
+    are assigned to each species based on the proportion of complete eBird checklists (i.e.,
+    observers reported all species observed), provided some minimum number of checklists is
+    present for a given geography and season.  Current functionality is limited to the United
+    States, but there is little to prevent the expansion of the methods to other areas or
+    georeferenced species occurrence databases.
 Depends: R (>= 3.2.1)
 Imports:
     data.table (>= 1.9.7),
@@ -23,6 +24,7 @@ Imports:
     ggplot2 (>= 1.0.1),
     lubridate (>= 1.3.3),
     plyr (>= 1.8.3),
+    reshape2 (>= 1.4.1),
     rgeos (>= 0.3-13),
     rgdal (>= 1.0-4),
     RSQLite (>= 1.0.0),
