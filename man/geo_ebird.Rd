@@ -51,10 +51,10 @@ The general process is to conservatively buffer \code{query_polys}, identify the
  directly with the precise desired buffer, and it may be, but it is often impracticable to
  have the entire eBird database loaded into RAM.  Thus, this function pares the eBird database
  to a manageable size (provided you're not querying an unreasonably large area of interest)
- prior to doing the precise extraction of records based on the and any associated buffers.
- The precise extraction of records occurs on a polygon-by-polygon basis to avoid complications
- arising from eBird record assignment when buffered polygons overlap.  Thus, the same eBird
- record may occur in multiple polygons depending on the buffer specification.
+ prior to doing the precise extraction of records based on the \code{query_polys} and any
+ associated buffers. The precise extraction of records occurs on a polygon-by-polygon basis to
+ avoid complications arising from eBird record assignment when buffered polygons overlap.  Thus,
+ the same eBird record may occur in multiple polygons depending on the buffer specification.
 }
 \details{
 This function should also work, but is untested, with \code{\link[sp]{SpatialPointsDataFrame-class}} or
