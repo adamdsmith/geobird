@@ -41,21 +41,27 @@
 #'  perform the geographic query on Piedmont National Wildlife Refuge).
 #' @param poly_id character string of the column in \code{query_polys} that contains the name
 #'   of the polygon to be used in the output.
-##' @param projection character string of PROJ.4 projection arguments; see also
+#' @param projection character string of PROJ.4 projection arguments; see also
 #'   \code{\link[sp]{CRS-class}}.  Default (NULL) buffers based on a WGS 84 / UTM (northern
 #'   hemisphere) projection in the UTM zone derived from the centroid (longitude, latitude) of
 #'   each \code{query_polys}.  See Details.
+#'  @param exlude logical indicating whether \code{which_polys} are to be selected (FALSE) or
+#'   excluded from the pool of polygons in \code{query_polys}
 #' @return a \code{\link{data.frame}} of eBird records in the \code{query_polys} plus any
 #'  associated buffers
 #' @export
 
 geo_ebird <- function(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
                            table_name = NULL, buffers = 0, which_polys = NULL,
-						   poly_id = "ORGNAME", projection = NULL) {
+						   poly_id = "ORGNAME", projection = NULL, exclude = FALSE) {
 
     if (!is.null(which_polys)) {
         which_polys <- tolower(gsub(" national.*", "", which_polys, ignore.case = TRUE))
-        query_polys <- query_polys[tolower(gsub(" NATIONAL.*", "", query_polys@data[, poly_id])) %in% which_polys, ]
+        if (exclude) {
+            query_polys <- query_polys[!(tolower(gsub(" NATIONAL.*", "", query_polys@data[, poly_id])) %in% which_polys), ]
+        } else {
+            query_polys <- query_polys[tolower(gsub(" NATIONAL.*", "", query_polys@data[, poly_id])) %in% which_polys, ]
+        }
     }
 
     # Extract eBird records in counties intersected by polygons plus buffer
@@ -87,8 +93,9 @@ geo_ebird <- function(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
         # Buffer them at the desired distances
         buff_assess <- lapply(buffers, function(buffer) {
             if (buffer != 0) {
-                buffs <- rgeos::gBuffer(zone_polys_utm, width = buffer * 1000, byid = TRUE)
-                buffs <- sp::spTransform(buffs, sp::CRS(proj4string(zone_polys)))
+                byid <- ifelse(length(zone_polys_utm) == 1, FALSE, TRUE)
+                buffs <- rgeos::gBuffer(zone_polys_utm, width = buffer * 1000, byid = byid)
+                buffs <- sp::spTransform(buffs, sp::CRS(sp::proj4string(zone_polys)))
             } else {
                 buffs <- zone_polys
             }

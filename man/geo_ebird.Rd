@@ -7,7 +7,7 @@ a \code{\link[sp]{SpatialPolygonsDataFrame-class}}.}
 \usage{
 geo_ebird(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
   table_name = NULL, buffers = 0, which_polys = NULL,
-  poly_id = "ORGNAME", projection = NULL)
+  poly_id = "ORGNAME", projection = NULL, exclude = FALSE)
 }
 \arguments{
 \item{query_polys}{\code{\link[sp]{SpatialPolygonsDataFrame-class}} within and around which
@@ -33,9 +33,12 @@ perform the geographic query on Piedmont National Wildlife Refuge).}
 of the polygon to be used in the output.}
 
 \item{projection}{character string of PROJ.4 projection arguments; see also
-\code{\link[sp]{CRS-class}}.  Default (NULL) buffers based on a WGS 84 / UTM (northern
-hemisphere) projection in the UTM zone derived from the centroid (longitude, latitude) of
-each \code{query_polys}.  See Details.}
+ \code{\link[sp]{CRS-class}}.  Default (NULL) buffers based on a WGS 84 / UTM (northern
+ hemisphere) projection in the UTM zone derived from the centroid (longitude, latitude) of
+ each \code{query_polys}.  See Details.}
+
+\item{exlude}{logical indicating whether \code{which_polys} are to be selected (FALSE) or
+excluded from the pool of polygons in \code{query_polys}}
 }
 \value{
 a \code{\link{data.frame}} of eBird records in the \code{query_polys} plus any
