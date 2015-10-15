@@ -57,7 +57,7 @@ plot_ebird_phen <- function(geo_ebird_df, species = NULL, complete_only = TRUE) 
         plot_dat <- rbind(plot_dat, df_add)
     }
 
-    plot_dat <- plot_dat %>% left_join(checklists) %>%
+    plot_dat <- plot_dat %>% left_join(checklists, by = c("name", "month", "buff_dist_km")) %>%
         mutate(buff_dist_km = as.factor(buff_dist_km))
 
     p <- ggplot(plot_dat, aes(x = month, y = value / monthly_checklists,
