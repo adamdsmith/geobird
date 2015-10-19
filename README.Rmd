@@ -32,7 +32,7 @@ With R and Rtools installed, install and load the MABM package to access its fun
 install.packages("devtools") # Only the first time
 library("devtools")
 install_github("Rdatatable/data.table", build_vignettes = FALSE) # data.table 1.9.7
-install_github("adamdsmith/geobirds") # Only the first time
+install_github("adamdsmith/geobird") # Only the first time
 library(geobirds)
 ```
 
