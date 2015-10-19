@@ -27,6 +27,9 @@
 #' @param min_lists integer or numeric vector of length = 1 indicating the minimum number of complete
 #'  eBird checklists to require in a given season before assigning a seasonal abundance
 #'  classification
+#' @param exclude_form logical indicating whether observations from the slightly nebulous "form"
+#'  category should be excluded (default = TRUE).  Setting to FALSE may add certain species (e.g.,
+#'  Red Crossbill) but also more controversial entries (e.g., Northern Red-tailed Hawk)
 #' @param xls logical indicating whether to output nicely formatted *.xls file (TRUE; default) or to
 #'  create a \code{\link{list}} of relevant information without any formatting (FALSE; i.e., for
 #'  further manipulation in R)
@@ -51,7 +54,8 @@
 #' make_checklists(piedmont, min_lists = 100)
 #' }
 
-make_checklists <- function(geo_ebird_df, min_lists = 10L, xls = TRUE, out_dir = "../Output/")  {
+make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
+                            xls = TRUE, out_dir = "../Output/")  {
 
     if (length(min_lists) != 1 | !(class(min_lists) %in% c("integer", "numeric")))
         stop("The min_lists argument must be an integer or numeric vector of length = 1")
@@ -64,6 +68,7 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, xls = TRUE, out_dir =
     geo_ebird_df <- mutate(geo_ebird_df,
                            season = factor(get_season(lubridate::month(date)),
                                            levels = c("spring", "summer", "fall", "winter")))
+    if (exclude_form) geo_ebird_df <- dplyr::filter(geo_ebird_df, category != "form")
 
     tax_order <- geo_ebird_df %>% select(common_name, tax_order) %>%
         group_by(common_name) %>% summarise(tax_order = min(tax_order))
