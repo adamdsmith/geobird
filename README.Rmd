@@ -33,7 +33,7 @@ install.packages("devtools") # Only the first time
 library("devtools")
 install_github("Rdatatable/data.table", build_vignettes = FALSE) # data.table 1.9.7
 install_github("adamdsmith/geobird") # Only the first time
-library(geobirds)
+library(geobird)
 ```
 
 ## Using geobirds
