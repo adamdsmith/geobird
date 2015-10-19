@@ -33,7 +33,7 @@ parse_ebird <- function(file) {
 
     # Filter out categories "spuh", "domestic", and "slash" & only to approved records
     df <- dplyr::filter(as.data.frame(df),
-                        !(category %in% c("spuh", "domestic", "slash")) & approved == 1)
+                        !(category %in% c("spuh", "domestic", "slash", "hybrid")) & approved == 1)
 
     # Convert "X" counts (i.e., not recorded) to 1 and convert to integer
     # Convert date to POSIXct object
