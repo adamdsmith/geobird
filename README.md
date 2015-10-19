@@ -18,8 +18,8 @@ With R and Rtools installed, install and load the MABM package to access its fun
     install_github("adamdsmith/geobird") # Only the first time
     library(geobird)
 
-Using geobirds
---------------
+Using geobird
+-------------
 
 Basic operations are illustrated below. For details on the arguments and options available in each function, see their associated help files.
 
