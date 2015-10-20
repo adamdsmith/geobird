@@ -49,6 +49,12 @@ The `store_ebird` function does the trick:
 store_ebird(ga_birds)
 ```
 
+As of version 0.3, you can now combine the parsing and storing into a single function call using the `file` argument in `store_ebird`:
+
+``` r
+store_ebird(file = "../Data/ebd_US-GA_relAug-2015.txt")
+```
+
 ### Making a geographic query of the database
 
 With the parsed eBird records from all 10 southeastern states stored in the local SQLite database, we can now make a geographic query. All we need are some polygons defining the areas we wish to query. In our case, this comes in the form of an ESRI shapefile of southeastern NWRs and fish hatcheries.
