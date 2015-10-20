@@ -1,7 +1,7 @@
 Package: geobird
 Type: Package
 Title: Query an eBird database by geography (e.g., shapefiles)
-Version: 0.2
+Version: 0.3
 Date: 2015-10-15
 Author: Adam D. Smith <adam_d_smith@fws.gov>
 Maintainer: Adam D. Smith <adam_d_smith@fws.gov>
