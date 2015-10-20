@@ -37,7 +37,6 @@
 #'  spreadsheets
 #' @return a Microsoft Excel spreadsheet for each distinct polygon (i.e., each (\code{name}) in
 #'   \code{geo_ebird_df}) when \code{xls = TRUE} or a \code{\link{list}} of \code{\link{list}}s
-#' @import dplyr
 #' @importFrom plyr "."
 #' @export
 #'
