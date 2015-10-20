@@ -4,11 +4,15 @@
 \alias{store_ebird}
 \title{Send filtered eBird data frame to SQLite database.}
 \usage{
-store_ebird(df, db = "../Data/SE_eBird.sqlite",
+store_ebird(df, file = NULL, db = "../Data/SE_eBird.sqlite",
   table_name = "SE_eBird_Aug2015")
 }
 \arguments{
 \item{df}{a \code{\link{data.frame}} created by \code{parse_ebird}}
+
+\item{file}{character string of the file path to the tab-delimited eBird .txt file; if
+specified, \code{df} is ignored. Useful for combining the parsing and storing of eBird
+records in a single step}
 
 \item{db}{character string containing the file path to the appropriate SQLite database}
 
