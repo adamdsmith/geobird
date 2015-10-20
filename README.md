@@ -32,11 +32,11 @@ The `parse_ebird` function accomplishes these tasks and outputs a data structure
 Take Georgia, for example. We're left with ~3.3 million statewide eBird records.
 
 ``` r
-ga_birds <- parse_ebird("../Data/ebd_US-GA_relAug-2015.txt") # 1.5 GB; takes < 1 min
+ga_birds <- parse_ebird("../Data/ebd_US-GA_relAug-2015.txt") # 1.5 GB; > 4M records; takes < 1 min
 class(ga_birds)
 [1] "data.table" "data.frame"
 dim(ga_birds)
-[1] 3351323      12
+[1] 3270274      12
 ```
 
 ### Storing it locally for quick access
