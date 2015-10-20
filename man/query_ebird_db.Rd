@@ -9,7 +9,7 @@ query_ebird_db(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
   buffer = 2, table_name = NULL, SPDF = TRUE)
 }
 \arguments{
-\item{query_polys}{\code{\link[sp]{SpatialPolygonDataFrame-class}} within and around which
+\item{query_polys}{\code{\link[sp]{SpatialPolygonsDataFrame-class}} within and around which
 the user wishes to extract eBird records.  It should also work, but is untested, with
 \code{\link[sp]{SpatialPointsDataFrame-class}} or
 \code{\link[sp]{SpatialLinesDataFrame-class}}) if a buffer is provided.  The buffer settings

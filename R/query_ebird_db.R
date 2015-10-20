@@ -4,7 +4,7 @@
 #' This function is called from \code{\link{geo_ebird}} and is thus not intended to
 #' be called outside of that functionality.
 #'
-#' @param query_polys \code{\link[sp]{SpatialPolygonDataFrame-class}} within and around which
+#' @param query_polys \code{\link[sp]{SpatialPolygonsDataFrame-class}} within and around which
 #'  the user wishes to extract eBird records.  It should also work, but is untested, with
 #'  \code{\link[sp]{SpatialPointsDataFrame-class}} or
 #'  \code{\link[sp]{SpatialLinesDataFrame-class}}) if a buffer is provided.  The buffer settings
@@ -23,7 +23,6 @@
 #'  projection as \code{query_polys}
 #' @return a \code{\link{data.frame}} of eBird records in the counties represented in the input
 #'  polygons (and an associated buffer)
-#' @import dplyr
 
 query_ebird_db <- function(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
                           buffer = 2, table_name = NULL, SPDF = TRUE) {
