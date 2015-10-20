@@ -13,7 +13,7 @@
 #'  all species observed (i.e., complete checklists; default = TRUE) should be used to calculate
 #'  proportion of checklists or whether all available checklists should be used (FALSE)
 #' @return a \code{\link[ggplot2]{ggplot}} object
-#' @import dplyr ggplot2
+#' @import ggplot2
 #' @export
 #'
 #' @examples
@@ -42,37 +42,40 @@ plot_ebird_phen <- function(geo_ebird_df, species = NULL, complete_only = TRUE) 
         spp_name <- tolower(spp_name)
     }
 
-    geo_ebird_df <- mutate(geo_ebird_df,
-                           name = factor(shorten_nwr(Cap(name))),
+    geo_ebird_df <- dplyr::mutate(geo_ebird_df,
+                           name = shorten_nwr(Cap(name)),
                            month = as.integer(lubridate::month(date)),
                            common_name = tolower(common_name))
 
-    if (complete_only) geo_ebird_df <- geo_ebird_df %>% filter(all_spp == 1)
+    if (complete_only) geo_ebird_df <- geo_ebird_df %>% dplyr::filter(all_spp == 1)
 
     checklists <- geo_ebird_df %>%
-        group_by(name, month, buff_dist_km) %>%
-        summarise(monthly_checklists = length(unique(checklist)))
+        dplyr::group_by(name, month, buff_dist_km) %>%
+        dplyr::summarise(monthly_checklists = length(unique(checklist)))
 
     plot_dat <- geo_ebird_df %>% filter(common_name == spp_name) %>%
-        group_by(name, common_name, sci_name, buff_dist_km, month) %>%
-        summarise(checklist = n()) %>% #,
+        dplyr::group_by(name, common_name, sci_name, buff_dist_km, month) %>%
+        dplyr::summarise(checklist = n()) %>% #,
         #          avg_count = round(sum(count) / checklist, 1)) %>%
-        data.table::melt(id = c("name", "common_name", "sci_name", "month", "buff_dist_km"))
+        data.table::melt(id = c("name", "common_name", "sci_name", "month", "buff_dist_km")) %>%
+        mutate(variable = as.character(variable))
         # mutate(variable = factor(variable, labels = c("# checklists", "Average count / checklist")),
 
     # Add zeros for months without data
     if (nrow(plot_dat) < 12) {
-        df_add <- expand.grid(name = levels(plot_dat$name),
+        df_add <- expand.grid(name = unique(plot_dat$name),
                               common_name = spp_name, sci_name = unique(plot_dat$sci_name),
                               month = 1:12, buff_dist_km = unique(plot_dat$buff_dist_km),
-                              variable = levels(plot_dat$variable))
-        df_add <- suppressWarnings(anti_join(df_add, select(plot_dat, -value)))
+                              variable = unique(plot_dat$variable),
+                              stringsAsFactors = FALSE)
+        df_add <- dplyr::anti_join(df_add, select(plot_dat, -value),
+                            by = c("name", "common_name", "sci_name", "month", "buff_dist_km", "variable"))
         df_add$value <- 0
-        plot_dat <- rbind(plot_dat, df_add)
+        plot_dat <- rbind(plot_dat, df_add) %>% dplyr::arrange(month)
     }
 
-    plot_dat <- plot_dat %>% left_join(checklists, by = c("name", "month", "buff_dist_km")) %>%
-        mutate(buff_dist_km = as.factor(buff_dist_km))
+    plot_dat <- plot_dat %>% dplyr::left_join(checklists, by = c("name", "month", "buff_dist_km")) %>%
+        dplyr::mutate(buff_dist_km = as.factor(buff_dist_km))
 
     p <- ggplot(plot_dat, aes(x = month, y = value / monthly_checklists,
                               group = buff_dist_km, colour = buff_dist_km)) +
