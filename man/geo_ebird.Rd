@@ -37,7 +37,7 @@ of the polygon to be used in the output.}
  hemisphere) projection in the UTM zone derived from the centroid (longitude, latitude) of
  each \code{query_polys}.  See Details.}
 
-\item{exlude}{logical indicating whether \code{which_polys} are to be selected (FALSE) or
+\item{exclude}{logical indicating whether \code{which_polys} are to be selected (FALSE) or
 excluded from the pool of polygons in \code{query_polys}}
 }
 \value{
