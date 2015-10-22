@@ -22,7 +22,21 @@ code_abundance <- function(p_lists) {
     abundance[findInterval(p_lists, cuts, rightmost.closed = TRUE)]
 }
 
-df_to_checklist <- function(df, type, n_buffs, buff_dists) {
+df_to_checklist <- function(df, type, n_buffs, buff_dists, ...) {
+
+    dots <- list(...)
+
+    poly_id <- unique(df$name)
+
+    if (type == "final") {
+        poly_act_occ <- subset(dots[["actual_occ"]], name == poly_id)
+        spp_occ <- poly_act_occ$common_name[!(poly_act_occ$common_name %in% df$common_name)]
+        occ_only <- poly_act_occ[poly_act_occ$common_name %in% spp_occ, ]
+        # Convert to vagrancy status
+        occ_only[, 5:8] <- apply(occ_only[, 5:8], 2, as.character)
+        occ_only[, 5:8][!is.na(occ_only[, 5:8])] <- "V"
+        df <- rbind(df, occ_only)
+    }
 
     df <- df %>% arrange(tax_order) %>% select(-name, -sci_name, -tax_order)
     df[!sapply(df, is.character)] <- lapply(df[!sapply(df, is.character)], as.character)
@@ -39,7 +53,7 @@ df_to_checklist <- function(df, type, n_buffs, buff_dists) {
     names(df)[1] <- ""
 
     # Insert new top row
-    df <- rbind(first_row, df[-(1),])
+    df <- rbind(first_row, df)
 
     if (type == "abund") {
         if (min(buff_dists) == 0 && max(buff_dists) >= 5) {
