@@ -60,10 +60,10 @@ df_to_checklist <- function(df, type, n_buffs, buff_dists, ...) {
             names(df)[length(df) - (5:0)] <- c("First detected", " ", rep("On vs. All", 4))
             df[1, length(df) - 5] <- "distance (km)"
         }
-    } else {
+    } else if (type == "occ") {
         if (n_buffs >= 2) {
-            names(df)[length(df) - (1:0)] <- c("First detected", " ")
-            df[1, length(df) - 1] <- "distance (km)"
+            names(df)[length(df)] <- "First detected"
+            df[1, length(df)] <- "distance (km)"
         }
     }
     df
