@@ -56,6 +56,8 @@ query_ebird_db <- function(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite"
     ebird <- DBI::dbGetQuery(db, sprintf("SELECT * FROM %s WHERE %s", table_name, where))
     DBI::dbDisconnect(db)
 
+    if (nrow(ebird) == 0) stop("No eBird records found within the specified polygons.")
+
     # Correct date for SQLite's inability to store in a date format
     ebird$date <- as.POSIXct(ebird$date, origin = "1970-01-01", tz = "GMT")
 
