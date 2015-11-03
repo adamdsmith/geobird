@@ -62,8 +62,13 @@ df_to_checklist <- function(df, type, n_buffs, buff_dists, ...) {
         }
     } else if (type == "occ") {
         if (n_buffs >= 2) {
-            names(df)[length(df)] <- "First detected"
-            df[1, length(df)] <- "distance (km)"
+            if (min(buff_dists) == 0 && max(buff_dists) >= 5) {
+                names(df)[length(df) - (1:0)] <- c("First detected", " ")
+                df[1, length(df) - 1] <- "distance (km)"
+            } else {
+                names(df)[length(df)] <- "First detected"
+                df[1, length(df)] <- "distance (km)"
+            }
         }
     }
     df
