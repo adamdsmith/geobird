@@ -32,7 +32,7 @@ perform the geographic query on Piedmont National Wildlife Refuge).}
 \item{poly_id}{character string of the column in \code{query_polys} that contains the name
 of the polygon to be used in the output.}
 
-\item{projection}{character string of PROJ.4 projection arguments; see also
+\item{projection}{CURRENTLY NOT USED; character string of PROJ.4 projection arguments; see also
  \code{\link[sp]{CRS-class}}.  Default (NULL) buffers based on a WGS 84 / UTM (northern
  hemisphere) projection in the UTM zone derived from the centroid (longitude, latitude) of
  each \code{query_polys}.  See Details.}
