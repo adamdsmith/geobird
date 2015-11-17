@@ -241,12 +241,18 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
                 df <- select(df, -name)
                 df
             })
+
+            out <- list(eBird_abundance = poly_abund,
+                        eBird_all_records = poly_occurrence,
+                        checklist = poly_final,
+                        eBird_effort = poly_effort)
+        } else {
+
+            out <- list(eBird_abundance = poly_abund,
+                        eBird_all_records = poly_occurrence,
+                        eBird_effort = poly_effort)
         }
 
-        out <- list(eBird_abundnace = poly_abund,
-                    eBird_all_records = poly_occurrence,
-                    checklist = poly_final,
-                    eBird_effort = poly_effort)
         out
 
     }
