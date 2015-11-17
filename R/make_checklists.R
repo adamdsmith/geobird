@@ -224,23 +224,24 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
 
     } else {
 
-        poly_abund <- plyr::dlply(abundance, .(name), select, -name)
-        poly_occurrence <- plyr::dlply(occurrence, .(name), select, -name)
+        poly_abund <- arrange(abundance, tax_order) %>% plyr::dlply(.(name), select, -name)
+        poly_occurrence <- arrange(occurrence, tax_order) %>%
+            plyr::dlply(., .(name), select, -name)
         poly_effort <- plyr::dlply(checklists, .(name), select, -name)
         # Extract species with occurrence data only, combine with abundance data at actual boundary
         if (0 %in% buff_dists) {
-            poly_final <- plyr::dlply(actual_abund, .(name), function(df) {
-                poly_id <- unique(df$name)
-                poly_act_occ <- subset(actual_occ, name == poly_id)
-                spp_occ <- poly_act_occ$common_name[!(poly_act_occ$common_name %in% df$common_name)]
-                occ_only <- poly_act_occ[poly_act_occ$common_name %in% spp_occ, ]
-                # Convert to vagrancy status
-                occ_only[, 5:8] <- apply(occ_only[, 5:8], 2, as.character)
-                occ_only[, 5:8][!is.na(occ_only[, 5:8])] <- "V"
-                df <- rbind(df, occ_only)
-                df <- select(df, -name)
-                df
-            })
+            poly_final <- arrange(actual_abund, tax_order) %>%
+                plyr::dlply(., .(name), function(df) {
+                    poly_id <- unique(df$name)
+                    poly_act_occ <- subset(actual_occ, name == poly_id)
+                    spp_occ <- poly_act_occ$common_name[!(poly_act_occ$common_name %in% df$common_name)]
+                    occ_only <- poly_act_occ[poly_act_occ$common_name %in% spp_occ, ]
+                    # Convert to vagrancy status
+                    occ_only[, 5:8] <- apply(occ_only[, 5:8], 2, as.character)
+                    occ_only[, 5:8][!is.na(occ_only[, 5:8])] <- "V"
+                    df <- rbind(df, occ_only) %>% select(-name)
+                    df
+                })
 
             out <- list(eBird_abundance = poly_abund,
                         eBird_all_records = poly_occurrence,
