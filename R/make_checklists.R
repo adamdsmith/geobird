@@ -214,7 +214,8 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
                           start.row = 3)
                 save.xlsx(poly_occurrence[[name]], out_file, sheetName = "eBird_all_records",
                           start.row = 3, append = TRUE)
-                save.xlsx(poly_final[[name]], out_file, sheetName = "Checklist",
+                if (name %in% names(poly_final))
+                  save.xlsx(poly_final[[name]], out_file, sheetName = "Checklist",
                           start.row = 3, append = TRUE)
             }
 
