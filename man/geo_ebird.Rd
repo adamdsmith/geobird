@@ -12,7 +12,9 @@ geo_ebird(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
 \arguments{
 \item{query_polys}{\code{\link[sp]{SpatialPolygonsDataFrame-class}} within and around which
 the user wishes to extract eBird records.  Currently, it is assumed that input \code{query_polys}
-are in a geographic (i.e., latitude and longitude) projection.  See Details.}
+are in a geographic (i.e., latitude and longitude) projection.  \code{query_polys} must have only
+a single feature associated with each \code{poly_id}, i.e., contain so-called multi-part polygons.
+See Details.}
 
 \item{ebird_sqlite}{character string file path to local eBird SQLite (.sqlite) database file}
 

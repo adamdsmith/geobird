@@ -11,6 +11,7 @@
 #'  associated buffers. The precise extraction of records occurs on a polygon-by-polygon basis to
 #'  avoid complications arising from eBird record assignment when buffered polygons overlap.  Thus,
 #'  the same eBird record may occur in multiple polygons depending on the buffer specification.
+
 #'
 #' This function should also work, but is untested, with \code{\link[sp]{SpatialPointsDataFrame-class}} or
 #'  \code{\link[sp]{SpatialLinesDataFrame-class}}) if a buffer is provided.
@@ -27,7 +28,9 @@
 #'
 #' @param query_polys \code{\link[sp]{SpatialPolygonsDataFrame-class}} within and around which
 #'  the user wishes to extract eBird records.  Currently, it is assumed that input \code{query_polys}
-#'  are in a geographic (i.e., latitude and longitude) projection.  See Details.
+#'  are in a geographic (i.e., latitude and longitude) projection.  \code{query_polys} must have only
+#'  a single feature associated with each \code{poly_id}, i.e., contain so-called multi-part polygons.
+#'  See Details.
 #' @param ebird_sqlite character string file path to local eBird SQLite (.sqlite) database file
 #' @param table_name character string naming the table within \code{ebird_sqlite} that
 #'  contains the relevant eBird data.  If not specified, defaults to the first table in
@@ -63,6 +66,9 @@ geo_ebird <- function(query_polys, ebird_sqlite = "../Data/SE_eBird.sqlite",
             query_polys <- query_polys[tolower(gsub(" NATIONAL.*", "", query_polys@data[, poly_id])) %in% which_polys, ]
         }
     }
+
+    if (max(table(query_polys@data[, poly_id])) > 1)
+        stop("query_polys must have only a single feature associated with each poly_id")
 
     # Extract eBird records in counties intersected by polygons plus buffer
     # Buffer distance at this stage is conservative to avoid excluding potential records
