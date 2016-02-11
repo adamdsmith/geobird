@@ -22,6 +22,7 @@ code_abundance <- function(p_lists) {
     abundance[findInterval(p_lists, cuts, rightmost.closed = TRUE)]
 }
 
+utils::globalVariables(c("name", "tax_order", "sci_name"))
 df_to_checklist <- function(df, type, n_buffs, buff_dists, ...) {
 
     dots <- list(...)
@@ -31,11 +32,13 @@ df_to_checklist <- function(df, type, n_buffs, buff_dists, ...) {
     if (type == "final") {
         poly_act_occ <- subset(dots[["actual_occ"]], name == poly_id)
         spp_occ <- poly_act_occ$common_name[!(poly_act_occ$common_name %in% df$common_name)]
-        occ_only <- poly_act_occ[poly_act_occ$common_name %in% spp_occ, ]
-        # Convert to vagrancy status
-        occ_only[, 5:8] <- apply(occ_only[, 5:8], 2, as.character)
-        occ_only[, 5:8][!is.na(occ_only[, 5:8])] <- "V"
-        df <- rbind(df, occ_only)
+        if (length(spp_occ) > 0) {
+            occ_only <- poly_act_occ[poly_act_occ$common_name %in% spp_occ, ]
+            # Convert to vagrancy status
+            occ_only[, 5:8] <- apply(occ_only[, 5:8], 2, as.character)
+            occ_only[, 5:8][!is.na(occ_only[, 5:8])] <- "V"
+            df <- rbind(df, occ_only)
+        }
     }
 
     df <- df %>% arrange(tax_order) %>% select(-name, -sci_name, -tax_order)
