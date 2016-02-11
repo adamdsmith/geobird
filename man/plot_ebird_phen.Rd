@@ -4,7 +4,8 @@
 \alias{plot_ebird_phen}
 \title{Create species phenology plots (monthly) of eBird species abundance and occurrence (# checklists).}
 \usage{
-plot_ebird_phen(geo_ebird_df, species = NULL, complete_only = TRUE)
+plot_ebird_phen(geo_ebird_df, species = NULL, which_polys = NULL,
+  complete_only = TRUE)
 }
 \arguments{
 \item{geo_ebird_df}{a \code{\link{data.frame}} created by \code{\link{geo_ebird}}}
@@ -13,6 +14,9 @@ plot_ebird_phen(geo_ebird_df, species = NULL, complete_only = TRUE)
 (the default), the user is presented with a list of available species from which to choose.
 Use the accepted American Ornithologists' Union name (see http://checklist.aou.org/taxa),
 insensitive to capitalization (e.g., "PuRpLe MaRtIn" works).}
+
+\item{which_polys}{character vector of the names of polygons to plot.  Default (NULL) is to
+generate a plot showing all polygons.  This argument is insensitive to capitalization.}
 
 \item{complete_only}{logical indicating whether only eBird checklists designated as reporting
 all species observed (i.e., complete checklists; default = TRUE) should be used to calculate
