@@ -1,6 +1,18 @@
-language: r
+language: R
+cache: packages
 sudo: required
 warnings_are_errors: true
 
+cran: http://cran.rstudio.com
+
 r_github_packages:
  - Rdatatable/data.table
+
+apt_packages: 
+ - gdal-bin
+ - libgdal1-dev
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
