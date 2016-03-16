@@ -1,6 +1,6 @@
 # geobird 0.3.2
 
-* Substantial improvements to `plot_ebird_phen` to better handle plots including multiple sites (polygons) and allow for plot a selection of sites
+* Substantial improvements to `plot_ebird_phen` to better handle plots including multiple sites (polygons) and allow the user to specify only a subset of site to be plotted
 * Added conditions to avoid problems with polygons with adequate abundance data for all species and polygons without adequate data to generate a checklist
 
 # geobird 0.3.1
