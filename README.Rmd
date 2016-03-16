@@ -47,7 +47,7 @@ Basic operations are illustrated below.  For details on the arguments and option
 
 ### Parsing eBird queries from Cornell
 
-We typically access historical eBird observations by requesting a state-by-state queries of the eBird database hosted by Cornell.  It comes as an often large tab-delimited text file (e.g., Florida's weighed in at nearly 4 GB and contained over 10 million records).  We only need a subset of the 43 variables contained in the file and we also wish to exclude records (1) not identified to species, (2) duplicated on eBird checklists of multiple observers, and (3) non-approved (i.e., not yet vetted) records.
+We typically access historical eBird observations by requesting state-by-state queries of the eBird database hosted by Cornell.  It comes as an often large tab-delimited text file (e.g., Florida's weighed in at nearly 4 GB and contained over 10 million records).  We only need a subset of the 43 variables contained in the file and we also wish to exclude records (1) not identified to species, (2) duplicated on eBird checklists of multiple observers, and (3) non-approved (i.e., not yet vetted) records.
 
 The `parse_ebird` function accomplishes these tasks and outputs a data structure amenable to local storage in a SQLite database.  One need only direct the function to the appropriate tab-delimited text file.
 
@@ -89,14 +89,14 @@ SErefuges <- rgdal::readOGR("../GIS", "refuges", verbose = FALSE, stringsAsFacto
 
 Now, we have some decisions to make.  Do we want to query all refuges (or a subset) and do we want to extend the area around the boundary (i.e., create a buffer) to capture nearby observations not technically on the refuge?  
 
-Either way, the `geo_bird` function is our friend.
+Either way, the `geo_ebird` function is our friend.
 
-The main arguments we need to worry with are `query_polys` (the polygons we want to query), `buffer` (the distance, in km, we wish to expand our polygon boundary; defaults to 0), and `which_polys` (the identification of specific polygons in `query_polys` if we don't want them all).
+The main arguments we need to worry with are `query_polys` (the polygons we want to query), `buffers` (the distance(s), in km, we wish to expand our polygon boundary; defaults to 0), and `which_polys` (the identification of specific polygons in `query_polys` if we don't want them all).  For your particular application, you'll likely need to direct the function to the location of the local SQLite database with the `ebird_sqlite` argument and specify the column name in the shapefile that defines the polygons (i.e., the `poly_id` argument).  See `?geo_ebird` for details on these arguments.
 
 For example, we could query the eBird records in all southeastern refuges, with a 2 km buffer around each, using the following command:
 
 ```{r all_refuges, eval = FALSE}
-all_nwrs <- geo_bird(SErefuges, buffers = 2)
+all_nwrs <- geo_ebird(SErefuges, buffers = 2)
 ```
 
 However, we'll take the less time-consuming example of using only a single refuge and no buffer (i.e., use the actual NWR boundary).  In this case, we'll use Piedmont National Wildlife Refuge.
@@ -109,7 +109,7 @@ piedmont <- geo_ebird(SErefuges, which_polys = "Piedmont")
 
 This leaves us with just over 17,500 eBird records (species observations) within the actual boundary of  Piedmont NWR.
 
-We could easily have picked only a few refuges as well.  Notice the name is insensitive to capitalization.  Here we also choose to explore eBird records within the actual refuge boundaries and also with an area represented by the refuge and a 10 km buffer.
+We could easily have picked a few refuges as well.  Notice the name is insensitive to capitalization.  Here, for example, we choose to explore eBird records within the actual refuge boundaries and also with an area represented by the refuge and a 10 km buffer.
 
 ```{r a_few, eval=FALSE}
 a_few_nwrs <- geo_ebird(SErefuges, which_polys = c("Piedmont", "HOBE SoUnD", "CEDar iSLand"),
@@ -120,7 +120,7 @@ a_few_nwrs <- geo_ebird(SErefuges, which_polys = c("Piedmont", "HOBE SoUnD", "CE
 
 The primary goal of this project was to output, for each refuge, a species list for each refuge and some consistent measure of relative abundance and occurrence.  
 
-The `make_checklists` function generates, for each queried polygon, a spreadsheet of all species detected on at least one eBird checklist. For each season (defined below), an estimated abundance classification is provided (defined below) if a minimum number of complete checklists is available (specified with the `min_lists` argument). Regardless, the total number of checklists (complete and incomplete) on which each species was observed in each season is reported. Likewise, the amount of effort (# of complete and total checklists) is reported by season.
+The `make_checklists` function generates, for each queried polygon, a spreadsheet of all species detected on at least one eBird checklist. For each season (defined below), an estimated abundance classification (defined below) is provided if a minimum number of complete checklists is available (specified with the `min_lists` argument). Regardless, the total number of checklists (complete and incomplete) on which each species was observed in each season is reported. Likewise, the amount of effort (# of complete and total checklists) is reported by season.
 
 We classified seasons as follows: spring (Mar - May), summer (Jun - Aug), fall (Sep - Nov), and winter (Dec - Feb). This classification corresponds roughly to the seasonal bird checklists present in many NWR brochures (which may have had a small part in the decision to use this classification). 
 
