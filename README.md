@@ -113,7 +113,7 @@ Abundance designations are classified based on the proportion of complete checkl
 
 Continuing our Piedmont NWR example, the output of the `make_checklists` function is an Excel spreadsheet containing four sheets: (1) seasonal abundance codes for those season with enough complete checklists, (2) seasonal occurrence information giving the total number of checklists (complete and incomplete) reporting a given species, (3) a finalized checklist within the actual refuge boundary (if the actual boundary was requested) and (4) a summary of the eBird effort at each requested buffer distance (seasonal totals of complete and all eBird checklists).
 
-If no seasons have enough complete checklists to generate abundnace codes, the first and third sheets (seasonal abundance and species checklist) is not generated. With Piedmont NWR, this is irrelevant as all season contain a sufficient number of complete checklists (as we've defined it; 10 complete checklists).
+If no seasons have enough complete checklists to generate abundance codes, the first and third sheets (seasonal abundance and species checklist) are not generated. With Piedmont NWR, this is irrelevant as all seasons contain a sufficient number of complete checklists (as we've defined it; 10 complete checklists).
 
 The columns included on the seasonal abundance and occurrence sheets depend on the specification of the buffer in the call to `geo_ebird`. In the current example, we did not explore eBird records in a buffer around Piedmont NWR, but rather used only the actual refuge boundary.
 
@@ -125,7 +125,7 @@ make_checklists(piedmont)
 
 ![Output](./README-figs/geobird_screenshot.png)
 
-If we specify an eBird query within the refuge boundaries (buffer = 0) and within a larger buffered area as well, we are provided some additional occurrence information. If the buffer is larger than 5 km (buffer &gt;= 5), we are also provided with some additional abundance information.
+If we specify an eBird query within the refuge boundaries as well as within a larger buffered area, we are gifted some additional occurrence information. If the buffer is larger than 5 km, we are also provided with some additional abundance information.
 
 Take, for example, a comparison of eBird data within Piedmont NWR as well as a 10 km buffer around the refuge:
 
@@ -134,7 +134,9 @@ piedmont_buffs <- geo_ebird(SErefuges, which_polys = "Piedmont", buffers = c(0, 
 make_checklists(piedmont_buffs)
 ```
 
-Looking at the top panel below, provided enough complete checklists are available, we are now given (1) abundance codes in each of the distance categories (i.e., actual boundary vs. refuge + 10 km buffer), (2) the distance at which abundance estimates are first possible, (3) a "Status" that indicates whether an abundance classification was possible for at least one season within the refuge ("abundance-refuge") or only by adding the buffer around the refuge ("abundance-buffer"), and (4) a crude season-by-season comparison of relative abundance within the refuge boundary and within the larger area including the buffer. If the proportion of complete checklists containing a given species was &gt; 25% higher on the refuge compared to the larger, buffered area, it is marked as "on-refuge". This may indicate that the refuge houses more of a given species compared to the larger landscape (see, e.g., Pileated Woodpecker in fall and winter). Conversely, an "off-refuge" designation indicates the prevalence of a given species (i.e., proportion of complete checklists) was higher on the larger landscape than on the refuge. A "-" indicates they're more or less equal.
+Looking at the top panel below, provided enough complete checklists are available, we are now given (1) abundance codes in each of the distance categories (i.e., actual boundary vs. refuge + 10 km buffer), (2) the distance at which abundance estimates are first possible, (3) a "Status" that indicates whether an abundance classification was possible for at least one season within the refuge ("abundance-refuge") or only by adding the buffer around the refuge ("abundance-buffer"), and (4) a crude season-by-season comparison of relative abundance within the refuge boundary and within the larger area including the buffer.
+
+For this last comparison, if the proportion of complete checklists containing a given species was &gt; 25% higher on the refuge compared to the larger, buffered area, it is marked as "on-refuge". This may indicate that the refuge houses more of a given species compared to the larger landscape (see, e.g., Pileated Woodpecker in fall and winter). Conversely, an "off-refuge" designation indicates the prevalence of a given species (i.e., proportion of complete checklists) was higher on the larger landscape than on the refuge. A hyphen ("-") indicates they were more or less equal.
 
 For the occurrence sheet (second panel from top), we are now given (1) the number of checklists reporting a given species at each distance category, (2) the distance at which occurrence was first documented, and (3) a "Status" that indicates whether it was possible to generate at least one abundance classification ("abundance") or only occurrence. In the latter case, we distinguish between occurrence within the refuge boundary ("occurrence-refuge") or occurrence only possible by including the buffer around the refuge ("occurrence-buffer").
 
@@ -148,7 +150,7 @@ Effort is now also summarized for each distance category (bottom panel).
 
 We can also visualize the monthly patterns of eBird detections by species, relative to eBird effort (i.e., \# checklists), using the `plot_ebird_phen` function.
 
-We can specify the species using the `species` argument (using the accepted AOU name but insensitive to capitalization) or, if not specified, we're presented with a list of available species. We follow up on the possible discrepancy in Pileated Woodpecker abundance on-refuge and on the larger landscape.
+We can specify the species using the `species` argument (using the accepted AOU name but insensitive to capitalization) or, if not specified, we're presented with a list of available species form which to choose. We follow up on the possible discrepancy in Pileated Woodpecker abundance on-refuge and on the larger landscape.
 
 ``` r
 plot_ebird_phen(piedmont_buffs)
