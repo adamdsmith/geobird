@@ -1,3 +1,8 @@
+# geobird 0.3.3
+
+* New option when outputting a spreadsheet to create an additional sheet in a format easy to incorporate into the NWRSpecies database.
+* Fixed some bugs in how abundance and occurrence status were defined.
+
 # geobird 0.3.2
 
 * Substantial improvements to `plot_ebird_phen` to better handle plots including multiple sites (polygons) and allow the user to specify only a subset of site to be plotted
