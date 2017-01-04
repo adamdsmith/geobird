@@ -17,8 +17,8 @@ get_season <- function(months) {
 }
 
 code_abundance <- function(p_lists) {
-    cuts <- c(0, 0.01, 0.1, 0.2, 0.3, 0.5, 1)
-    abundance <- c("V", "R", "O", "U", "C", "A")
+    cuts <- c(0, 0.1, 0.2, 0.3, 0.5, 1)
+    abundance <- c("Rare", "Occasional", "Uncommon", "Common", "Abundant")
     abundance[findInterval(p_lists, cuts, rightmost.closed = TRUE)]
 }
 
@@ -143,4 +143,9 @@ every_nth <- function(x, nth, blank = TRUE, inverse = FALSE) {
             x[1:nth != 1]
         }
     }
+}
+
+compare <- function(v) {
+    if (any(is.na(v))) return(FALSE)
+    identical(min(v), max(v, na.rm = TRUE))
 }
