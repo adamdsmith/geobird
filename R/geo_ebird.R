@@ -48,8 +48,9 @@
 #'   \code{\link[sp]{CRS-class}}.  Default (NULL) buffers based on a WGS 84 / UTM (northern
 #'   hemisphere) projection in the UTM zone derived from the centroid (longitude, latitude) of
 #'   each \code{query_polys}.  See Details.
-#'  @param exclude logical indicating whether \code{which_polys} are to be selected (FALSE) or
-#'   excluded from the pool of polygons in \code{query_polys}
+#' @param exclude logical indicating whether to exclude \code{which_polys} from the pool of polygons
+#'  in \code{query_polys}; default is `FALSE`, which selects uses only \code{which_polys} for the
+#'  query
 #' @return a \code{\link{data.frame}} of eBird records in the \code{query_polys} plus any
 #'  associated buffers
 #' @export
