@@ -33,6 +33,8 @@
 #' @param xls logical indicating whether to output nicely formatted *.xls file (TRUE; default) or to
 #'  create a \code{\link{list}} of relevant information without any formatting (FALSE; i.e., for
 #'  further manipulation in R)
+#' @param nwrspp logical indicating whether a sheet formatted for easy importing into the NWRSpecies
+#'  database is requested (default = FALSE); only applies if `xls = TRUE`.
 #' @param out_dir character string of the file path to the directory in which to save output
 #'  spreadsheets
 #' @return a Microsoft Excel spreadsheet for each distinct polygon (i.e., each (\code{name}) in
@@ -54,7 +56,7 @@
 #' }
 
 make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
-                            xls = TRUE, out_dir = "../Output/")  {
+                            xls = TRUE, nwrspp = FALSE, out_dir = "../Output/")  {
 
     if (length(min_lists) != 1 | !(class(min_lists) %in% c("integer", "numeric")))
         stop("The min_lists argument must be an integer or numeric vector of length = 1")
@@ -70,12 +72,12 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
     if (exclude_form) geo_ebird_df <- dplyr::filter(geo_ebird_df, category != "form")
 
     # Store taxonomic order info for later
-    tax_order <- geo_ebird_df %>% select(common_name, tax_order) %>%
-        group_by(common_name) %>% summarise(tax_order = min(tax_order))
+    tax_order <- geo_ebird_df %>% dplyr::select(common_name, tax_order) %>%
+        dplyr::group_by(common_name) %>% dplyr::summarise(tax_order = min(tax_order))
 
     # Tabulate the number of complete checklists by season (i.e., all_spp == 1)
-    complete_checklists <-geo_ebird_df %>% filter(all_spp == 1) %>%
-        group_by(name, season, buff_dist_km) %>%
+    complete_checklists <- geo_ebird_df %>% dplyr::filter(all_spp == 1) %>%
+        dplyr::group_by(name, season, buff_dist_km) %>%
         summarise(season_checklists = length(unique(checklist)))
 
     # Tabulate all checklists by season (complete or incomplete)
@@ -92,14 +94,15 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
                abundance = code_abundance(p_lists)) %>%
         mutate(abundance = ifelse(season_checklists >= min_lists, abundance, NA_character_)) %>%
         select(-season_checklists, -spp_checklists, -p_lists) %>%
-        left_join(tax_order, by = "common_name") %>%
-        reshape2::dcast(name + common_name + sci_name + tax_order ~ buff_dist_km + season, value.var = "abundance")
+        left_join(tax_order, by = "common_name") %>% data.table::as.data.table() %>%
+        data.table::dcast(name + common_name + sci_name + tax_order ~ buff_dist_km + season,
+                        value.var = "abundance", drop = c(TRUE, FALSE))
     names(abundance)[-4:-1] <- flip_string(names(abundance)[-4:-1], add_on = "km")
 
     # Extract abundance at actual polygon boundaries only for use in final checklist generation
     if (0 %in% buff_dists) {
-        drop <- apply(abundance[, 5:8], 1, function(row) all(is.na(row)))
-        actual_abund <- abundance[!drop, 1:8]
+        no_abund_refuge <- apply(abundance[, 5:8], 1, function(row) all(is.na(row)))
+        actual_abund <- abundance[!no_abund_refuge, 1:8]
     }
 
     # Tabulate total number of checklists recording a given species by season
@@ -108,14 +111,15 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
         group_by(name, season, common_name, sci_name, buff_dist_km, season_checklists) %>%
         summarise(n_checklists = n()) %>%
         select(-season_checklists) %>%
-        left_join(tax_order, by = "common_name") %>%
-        reshape2::dcast(name + common_name + sci_name + tax_order ~ buff_dist_km + season, value.var = "n_checklists")
+        left_join(tax_order, by = "common_name") %>% data.table::as.data.table() %>%
+        data.table::dcast(name + common_name + sci_name + tax_order ~ buff_dist_km + season,
+                          value.var = "n_checklists", drop = c(TRUE, FALSE))
     names(occurrence)[-4:-1] <- flip_string(names(occurrence)[-4:-1], add_on = "km")
 
     # Extract occurrence at actual polygon boundaries only for use in final checklist generation
     if (0 %in% buff_dists) {
-        drop <- apply(occurrence[, 5:8], 1, function(row) all(is.na(row)))
-        actual_occ <- occurrence[!drop, 1:8]
+        no_occ_refuge <- apply(occurrence[, 5:8], 1, function(row) all(is.na(row)))
+        actual_occ <- occurrence[!no_occ_refuge, 1:8]
     }
 
     # If comparing actual boundary and larger landscape (i.e., buffer >= 5 km),
@@ -130,13 +134,14 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
         abund_det_stats <- abund_det_stats[min_buff, ]
         names(abund_det_stats)[3] <- "first_detected_km"
         abund_det_stats <- mutate(abund_det_stats,
-                                  Status = ifelse(first_detected_km == 0, "abundance-refuge",
-                                                  "abundance-buffer"))
+                                  Status = ifelse(no_abund_refuge, "abundance-buffer",
+                                                  "abundance-refuge"))
 
         abund_traj <- geo_ebird_df %>% filter(all_spp == 1) %>%
             left_join(complete_checklists, by = c("buff_dist_km", "name", "season")) %>%
             group_by(name, season, common_name, sci_name, buff_dist_km, season_checklists) %>%
             summarise(spp_checklists = n()) %>%
+            filter(season_checklists >= min_lists) %>%
             mutate(p_lists = round(spp_checklists / season_checklists, 3)) %>%
             group_by(name, season, common_name) %>%
             arrange(buff_dist_km) %>%
@@ -148,26 +153,18 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
             left_join(abund_traj, by = c("name", "common_name"))
     }
 
-    # If more than one distance explored, document first detected distance and, if comparing actual
-    # boundary, note whether abundance estimates were possible or only occurrence
-    if (n_buffs >= 2) {
+    # Document first detected distance; relevant with multiple buffers
+    occ_det_stats <- geo_ebird_df %>%
+        select(name, common_name, buff_dist_km) %>% unique() %>%
+        arrange(name, common_name, buff_dist_km)
+    min_buff <- !duplicated(select(occ_det_stats, name, common_name))
+    occ_det_stats <- occ_det_stats[min_buff, ]
+    names(occ_det_stats)[3] <- "first_detected_km"
+    occ_det_stats <- mutate(occ_det_stats,
+                            Status = ifelse(no_occ_refuge, "occurrence-buffer",
+                                            "occurrence-refuge"))
 
-        occ_det_stats <- geo_ebird_df %>%
-            select(name, common_name, buff_dist_km) %>% unique() %>%
-            arrange(name, common_name, buff_dist_km)
-        min_buff <- !duplicated(select(occ_det_stats, name, common_name))
-        occ_det_stats <- occ_det_stats[min_buff, ]
-        names(occ_det_stats)[3] <- "first_detected_km"
-        if (exists("abund_det_stats")) {
-            occ_det_stats <- mutate(occ_det_stats,
-                                    Status = ifelse(!(occ_det_stats$common_name %in% abund_det_stats$common_name),
-                                                    ifelse(first_detected_km == 0, "occurrence-refuge",
-                                                           "occurrence-buffer"), "abundance"))
-        }
-
-        occurrence <- left_join(occurrence, occ_det_stats, by = c("name", "common_name"))
-
-    }
+    occurrence <- left_join(occurrence, occ_det_stats, by = c("name", "common_name"))
 
     # Summary table to complete checklists
     complete_checklists <- complete_checklists %>%
@@ -199,6 +196,25 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
 
         poly_effort <- plyr::dlply(checklists, .(name), select, -name)
 
+        ## Create sheet for NWRSpecies incorporation
+        if (nwrspp) {
+            max_buff <- max(buff_dists)
+            abund_cols <- paste0(c("spring_", "summer_", "fall_", "winter_"), max_buff, "km")
+            keep_fields <- c("name", "CommonName", abund_cols, "Abundance", "Occurrence", "OccurrenceTag")
+            poly_nwrspp <- occurrence %>% dplyr::select_(.dots = c("name", "common_name", "Status")) %>%
+                dplyr::left_join(., dplyr::select_(abundance, .dots = c("name", "common_name", abund_cols)),
+                                 by = c("name", "common_name")) %>%
+                mutate_(.dots = setNames(list(
+                    ~ifelse(grepl("buffer", Status), "Unconfirmed", "Present"),
+                    ~ifelse(grepl("buffer", Status), "Adjacent", NA_character_),
+                    ~common_name),
+                    c("Occurrence", "OccurrenceTag", "CommonName")))
+            poly_nwrspp$Abundance <- poly_nwrspp[, abund_cols] %>% apply(., 1, compare) %>%
+                ifelse(., poly_nwrspp[, abund_cols[1]], NA_character_)
+            poly_nwrspp <- dplyr::select_(poly_nwrspp, .dots = keep_fields) %>%
+                plyr::dlply(., .(name), select, -name)
+        }
+
         for (name in names(poly_occurrence)) {
 
             if (substr(out_dir, nchar(out_dir), nchar(out_dir)) != "/") out_dir <- paste0(out_dir, "/")
@@ -220,6 +236,8 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
             }
 
             save.xlsx(poly_effort[[name]], out_file, sheetName = "eBird_effort", append = TRUE)
+
+            if (nwrspp) save.xlsx(poly_nwrspp[[name]], out_file, sheetName = "NWRSpecies", append = TRUE)
 
         }
 
