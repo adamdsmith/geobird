@@ -120,7 +120,7 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
     if (0 %in% buff_dists) {
         no_occ_refuge <- apply(occurrence[, 5:8], 1, function(row) all(is.na(row)))
         actual_occ <- occurrence[!no_occ_refuge, 1:8]
-    }
+    } else no_occ_refuge <- rep(TRUE, nrow(occurrence))
 
     # If comparing actual boundary and larger landscape (i.e., buffer >= 5 km),
     # document first detected distance and compare abundance classifications within boundary
