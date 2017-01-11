@@ -31,7 +31,7 @@
 #' plot_ebird_phen(piedmont, species = "PiLEAted WOOdPECKer")
 #' }
 
-plot_ebird_phen <- function(geo_ebird_df, species = NULL, 
+plot_ebird_phen <- function(geo_ebird_df, species = NULL,
                             which_polys = NULL, complete_only = TRUE) {
 
   ## Prompt user to specify species, if not specified
@@ -43,22 +43,21 @@ plot_ebird_phen <- function(geo_ebird_df, species = NULL,
     species <- tcltk::tk_select.list(spp, title="Choose the species to visualize.", multiple = FALSE)
   }
 
-  if (!is.null(which_polys)) geo_ebird_df <- geo_ebird_df %>% 
+  if (!is.null(which_polys)) geo_ebird_df <- geo_ebird_df %>%
     dplyr::filter(tolower(name) %in% tolower(which_polys))
-  
+
   if (complete_only) geo_ebird_df <- geo_ebird_df %>% dplyr::filter(all_spp == 1)
-  
+
   checklists <- geo_ebird_df %>%
     dplyr::group_by(name, lubridate::month(date), buff_dist_km) %>%
     dplyr::summarise(monthly_checklists = length(unique(checklist)))
   names(checklists)[2] <- "month"
-  
+
   geo_ebird_df <- geo_ebird_df %>%
-    filter(tolower(common_name) == tolower(species)) %>% 
-    dplyr::mutate(name = shorten_nwr(Cap(name)),
-                  month = as.integer(lubridate::month(date)))
-  
-  plot_dat <- geo_ebird_df %>% 
+    filter(tolower(common_name) == tolower(species)) %>%
+    dplyr::mutate(month = as.integer(lubridate::month(date)))
+
+  plot_dat <- geo_ebird_df %>%
         dplyr::group_by(name, common_name, sci_name, buff_dist_km, month) %>%
         dplyr::summarise(checklist = n()) %>% #,
         #          avg_count = round(sum(count) / checklist, 1)) %>%
@@ -78,10 +77,11 @@ plot_ebird_phen <- function(geo_ebird_df, species = NULL,
                                  by = c("name", "month", "buff_dist_km"))
       plot_dat <- rbind(plot_dat, df_add) %>% dplyr::arrange(name, buff_dist_km, month)
     }
-    
+
     plot_dat <- plot_dat %>% dplyr::left_join(checklists, by = c("name", "month", "buff_dist_km")) %>%
-      dplyr::mutate(buff_dist_km = as.factor(buff_dist_km))
-    
+      dplyr::mutate(buff_dist_km = as.factor(buff_dist_km),
+                    name = shorten_nwr(Cap(name)))
+
     p <- ggplot(plot_dat, aes(x = month, y = value / monthly_checklists,
                               group = buff_dist_km, colour = buff_dist_km)) +
       geom_line() + geom_point(aes(size = monthly_checklists)) +
@@ -89,23 +89,23 @@ plot_ebird_phen <- function(geo_ebird_df, species = NULL,
       scale_size("# eBird\nchecklists", breaks = scales::pretty_breaks()) +
       theme_bw() + ggtitle(species) +
       theme(plot.title = element_text(face="bold"))
-    
+
     nc <- length(unique(plot_dat$name))
     p <- p + facet_wrap(~ name, scales = "free", ncol = ifelse(nc < 3, nc, 3))
-  
+
     # Adjust y axis labels based on checklist requirements
     y_lab <- "Proportion of complete eBird checklists"
     if (!complete_only) y_lab <- "Proportion of all eBird checklists"
-    
+
     p <- p + ylab(y_lab)
-    
+
     # Adjust x axis labels if lots of polygons
     if (nc < 3) {
       p <- p + scale_x_continuous("Month", breaks = 1:12, labels = month.abb)
     } else {
       p <- p + scale_x_continuous("Month", breaks = 1:12, labels = substr(month.abb, 1, 1))
     }
-    
+
     p
-  
+
 }
