@@ -15,13 +15,10 @@ Installing geobird
 
 The geobird package requires you to have [R](https://www.r-project.org/) (&gt;= 3.2.1) installed on your computer as well as [Rtools](https://cran.r-project.org/bin/windows/Rtools/). Both will require administrative priveleges but the installation of packages after this initial install will not.
 
-You'll also need the development version of the `data.table` package until version 1.9.8 is released.
-
 With R and Rtools installed, install and load the MABM package to access its functionality:
 
     install.packages("devtools") # Only the first time
     library("devtools")
-    install_github("Rdatatable/data.table", build_vignettes = FALSE) # data.table 1.9.7
     install_github("adamdsmith/geobird") # Only the first time
     library(geobird)
 
