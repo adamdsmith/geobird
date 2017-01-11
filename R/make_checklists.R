@@ -96,7 +96,8 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
         select(-season_checklists, -spp_checklists, -p_lists) %>%
         left_join(tax_order, by = "common_name") %>% data.table::as.data.table() %>%
         data.table::dcast(name + common_name + sci_name + tax_order ~ buff_dist_km + season,
-                        value.var = "abundance", drop = c(TRUE, FALSE))
+                        value.var = "abundance", drop = c(TRUE, FALSE)) %>%
+        as.data.frame()
     names(abundance)[-4:-1] <- flip_string(names(abundance)[-4:-1], add_on = "km")
 
     # Extract abundance at actual polygon boundaries only for use in final checklist generation
@@ -113,7 +114,8 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
         select(-season_checklists) %>%
         left_join(tax_order, by = "common_name") %>% data.table::as.data.table() %>%
         data.table::dcast(name + common_name + sci_name + tax_order ~ buff_dist_km + season,
-                          value.var = "n_checklists", drop = c(TRUE, FALSE))
+                          value.var = "n_checklists", drop = c(TRUE, FALSE)) %>%
+        as.data.frame()
     names(occurrence)[-4:-1] <- flip_string(names(occurrence)[-4:-1], add_on = "km")
 
     # Extract occurrence at actual polygon boundaries only for use in final checklist generation
@@ -198,21 +200,46 @@ make_checklists <- function(geo_ebird_df, min_lists = 10L, exclude_form = TRUE,
 
         ## Create sheet for NWRSpecies incorporation
         if (nwrspp) {
+            # Retrieve some internal tables for joining
+            tlu <- system.file("extdata", "tlu_CMT.xlsx", package = "geobird") %>%
+                xlsx::read.xlsx(1, stringsAsFactors = FALSE) %>%
+                select(OrgName = ORGNAME, UnitCode = FBMS) %>%
+                # Special case; rename Savannah
+                mutate(OrgName = ifelse(OrgName == "Savannah-Pinckney National Wildlife Refuges",
+                                     "Savannah National Wildlife Refuge", OrgName))
+            taxon <- system.file("extdata", "MatchedBirds.xlsx", package = "geobird") %>%
+                xlsx::read.xlsx(1, stringsAsFactors = FALSE) %>%
+                select(CommonName, TaxonCode, Nativeness)
+
             max_buff <- max(buff_dists)
-            abund_cols <- paste0(c("spring_", "summer_", "fall_", "winter_"), max_buff, "km")
-            keep_fields <- c("name", "CommonName", abund_cols, "Abundance", "Occurrence", "OccurrenceTag")
+            old_abund_cols <- paste0(c("spring_", "summer_", "fall_", "winter_"), max_buff, "km")
+            abund_cols <- paste0(c("Spring", "Summer", "Fall", "Winter"), "Abundance")
+            keep_fields <- c(abund_cols, "Abundance", "Occurrence", "OccurrenceTag", "Category",
+                             "CategoryCode", "UnitCode", "OrgName", "Nativeness", "CommonName",
+                             "TaxonCode", "ExternalLinks")
             poly_nwrspp <- occurrence %>% dplyr::select_(.dots = c("name", "common_name", "Status")) %>%
-                dplyr::left_join(., dplyr::select_(abundance, .dots = c("name", "common_name", abund_cols)),
+                dplyr::left_join(., dplyr::select_(abundance, .dots = c("name", "common_name", old_abund_cols)),
                                  by = c("name", "common_name")) %>%
                 mutate_(.dots = setNames(list(
                     ~ifelse(grepl("buffer", Status), "Unconfirmed", "Present"),
                     ~ifelse(grepl("buffer", Status), "Adjacent", NA_character_),
-                    ~common_name),
-                    c("Occurrence", "OccurrenceTag", "CommonName")))
+                    ~"Birds", # Add some constant columns
+                    ~2,
+                    ~"http://ebird.org"),
+                    c("Occurrence", "OccurrenceTag", "Category", "CategoryCode", "ExternalLinks"))) %>%
+                rename_(.dots = setNames(c(old_abund_cols, "name", "common_name"),
+                                         c(abund_cols, "OrgName", "CommonName")))
+
             poly_nwrspp$Abundance <- poly_nwrspp[, abund_cols] %>% apply(., 1, compare) %>%
                 ifelse(., poly_nwrspp[, abund_cols[1]], NA_character_)
-            poly_nwrspp <- dplyr::select_(poly_nwrspp, .dots = keep_fields) %>%
-                plyr::dlply(., .(name), select, -name)
+
+            # Join ancillary information
+            poly_nwrspp <- poly_nwrspp %>%
+                insensitive(dplyr::left_join)(., tlu, by = "OrgName") %>%
+                insensitive(dplyr::left_join)(., taxon, by = "CommonName") %>%
+                # Final column arrangement
+                dplyr::select_(.dots = keep_fields) %>%
+                plyr::dlply(., .(OrgName))
         }
 
         for (name in names(poly_occurrence)) {
