@@ -18,8 +18,7 @@ The geobird package requires you to have [R](https://www.r-project.org/) (&gt;= 
 With R and Rtools installed, install and load the MABM package to access its functionality:
 
     install.packages("devtools") # Only the first time
-    library("devtools")
-    install_github("adamdsmith/geobird") # Only the first time
+    devtools::install_github("adamdsmith/geobird") # Only the first time
     library(geobird)
 
 Using geobird
