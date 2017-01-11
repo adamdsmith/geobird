@@ -17,9 +17,9 @@ get_season <- function(months) {
 }
 
 code_abundance <- function(p_lists) {
-    cuts <- c(0, 0.01, 0.025, 0.05, 0.2, 1)
+    cuts <- c(0, 0.01, 0.025, 0.05, 0.2, 1.01)
     abundance <- c("Rare", "Occasional", "Uncommon", "Common", "Abundant")
-    abundance[findInterval(p_lists, cuts, rightmost.closed = TRUE)]
+    abundance[findInterval(p_lists, cuts)]
 }
 
 utils::globalVariables(c("name", "tax_order", "sci_name"))
