@@ -1,19 +1,16 @@
-language: R
-
-cache: packages
-sudo: required
+language: r
 warnings_are_errors: true
+sudo: true
 
 cran: http://cran.rstudio.com
 
-r_github_packages:
- - Rdatatable/data.table
-
 r_binary_packages:
  - rgdal
+ - sp
+ - rgeos
  - rJava
  - xlsxjars
- 
+
 notifications:
   email:
     on_success: change
