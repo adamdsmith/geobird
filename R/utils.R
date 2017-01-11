@@ -36,7 +36,7 @@ df_to_checklist <- function(df, type, n_buffs, buff_dists, ...) {
             occ_only <- poly_act_occ[poly_act_occ$common_name %in% spp_occ, ]
             # Convert to vagrancy status
             occ_only[, 5:8] <- apply(occ_only[, 5:8], 2, as.character)
-            occ_only[, 5:8][!is.na(occ_only[, 5:8])] <- "V"
+            occ_only[, 5:8][!is.na(occ_only[, 5:8])] <- "Rare"
             df <- rbind(df, occ_only)
         }
     }
