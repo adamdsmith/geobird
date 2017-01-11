@@ -109,7 +109,7 @@ The `make_checklists` function generates, for each queried polygon, a spreadshee
 
 We classified seasons as follows: spring (Mar - May), summer (Jun - Aug), fall (Sep - Nov), and winter (Dec - Feb). This classification corresponds roughly to the seasonal bird checklists present in many NWR brochures (which may have had a small part in the decision to use this classification).
 
-Abundance designations are classified based on the proportion of complete checklists on which a given species occurs. The `min_lists` argument allows the user to determine the number of checklists necessary to even attempt such a designation. The default is 10 complete checklists, although a larger minimum (e.g., 50 or 100) is probably a more reasonable choice for generating an estimate of species relative abundance. Abundance classifications (% of complete checklists) are: Abundant (&gt; 50%), Common (30 - 50%), Uncommon (20 - 30%\], Occasional (10 - 20%\], and Rare (&lt; 10%).
+Abundance designations are classified based on the proportion of complete checklists on which a given species occurs. The `min_lists` argument allows the user to determine the number of checklists necessary to even attempt such a designation. The default is 10 complete checklists, although a larger minimum (e.g., 50 or 100) is probably a more reasonable choice for generating an estimate of species relative abundance. Abundance classifications (% of complete checklists) are: Abundant (&gt;= 20%), Common \[5 - 20%), Uncommon \[2.5 - 5%), Occasional \[1 - 2.5%), and Rare (&lt; 1%).
 
 Continuing our Piedmont NWR example, the output of the `make_checklists` function is an Excel spreadsheet containing four sheets: (1) seasonal abundance codes for those season with enough complete checklists, (2) seasonal occurrence information giving the total number of checklists (complete and incomplete) reporting a given species, (3) a finalized checklist within the actual refuge boundary (if the actual boundary was requested) and (4) a summary of the eBird effort at each requested buffer distance (seasonal totals of complete and all eBird checklists).
 
@@ -136,11 +136,11 @@ make_checklists(piedmont_buffs)
 
 Looking at the top panel below, provided enough complete checklists are available, we are now given (1) abundance codes in each of the distance categories (i.e., actual boundary vs. refuge + 10 km buffer), (2) the distance at which abundance estimates are first possible, (3) a "Status" that indicates whether an abundance classification was possible for at least one season within the refuge ("abundance-refuge") or only by adding the buffer around the refuge ("abundance-buffer"), and (4) a crude season-by-season comparison of relative abundance within the refuge boundary and within the larger area including the buffer.
 
-For this last comparison, if the proportion of complete checklists containing a given species was &gt; 25% higher on the refuge compared to the larger, buffered area, it is marked as "on-refuge". This may indicate that the refuge houses more of a given species compared to the larger landscape (see, e.g., Pileated Woodpecker in fall and winter). Conversely, an "off-refuge" designation indicates the prevalence of a given species (i.e., proportion of complete checklists) was higher on the larger landscape than on the refuge. A hyphen ("-") indicates they were more or less equal.
+For this last comparison, if the proportion of complete checklists containing a given species was &gt; 25% higher on the refuge compared to the larger, buffered area, it is marked as "on-refuge". This may indicate that the refuge houses more of a given species compared to the larger landscape (see, e.g., Pileated Woodpecker in winter). Conversely, an "off-refuge" designation indicates the prevalence of a given species (i.e., proportion of complete checklists) was higher on the larger landscape than on the refuge. A hyphen ("-") indicates they were more or less equal.
 
-For the occurrence sheet (second panel from top), we are now given (1) the number of checklists reporting a given species at each distance category, (2) the distance at which occurrence was first documented, and (3) a "Status" that indicates whether it was possible to generate at least one abundance classification ("abundance") or only occurrence. In the latter case, we distinguish between occurrence within the refuge boundary ("occurrence-refuge") or occurrence only possible by including the buffer around the refuge ("occurrence-buffer").
+For the occurrence sheet (second panel from top), we are now given (1) the number of checklists reporting a given species at each distance category in each season, (2) the distance at which occurrence was first documented, and (3) a "Status" that indicates whether occurrence was documented within the refuge boundary ("occurrence-refuge") or only in the buffer ("occurrence-buffer").
 
-The checklist (third panel) consolidates the abundance records (top panel) and occurrence only records (from the second panel) into an overall species list for the actual polygon boundary. Species that occur within the boundary but with inadequate data from an abundance classification are arbitrarily assigned "vagrant" status for their season(s) of occurrence.
+The checklist (third panel) consolidates the abundance records (top panel) and occurrence only records (from the second panel) into an overall species list for the *actual* polygon boundary. Species that occur within the boundary but with inadequate data from an abundance classification are arbitrarily assigned a status of "Rare" for their season(s) of occurrence.
 
 Effort is now also summarized for each distance category (bottom panel).
 
@@ -161,3 +161,15 @@ plot_ebird_phen(piedmont_buffs)
 ![PIWO phenology](./README-figs/PIWO_plot.png)
 
 The plot illustrates the higher proporortion of complete checklists containing Pileated Woodpeckers in fall and winter (Sep - Feb), and also provides information about the amount of monthly effort which, for Piedmont and the surrounding area, is greatest from February through June.
+
+### Exporting to NWRSpecies Database
+
+With version 0.3.3, specifying the `nwrspp = TRUE` argument to `make_checklist` generates an additional sheet in the output spreadsheet that is formatted to (hopefully) integrate seamlessly into the USFWS NWRSpecies database.
+
+``` r
+## Note, using the eBird query based only on refuge boundary
+## No buffers
+make_checklists(piedmont, nwrspp = TRUE)
+```
+
+![NWRSpecies tab](./README-figs/NWRSpecies.png)
